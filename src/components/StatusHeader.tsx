@@ -7,29 +7,28 @@ const StatusHeader = () => {
   const systemStatus: SystemStatus = "operational";
 
   const getStatusInfo = () => {
-    switch (systemStatus) {
-      case "operational":
-        return {
-          icon: <CheckCircle className="w-8 h-8 text-[#5050ff]" />,
-          text: "Projeto em Andamento",
-          bgColor: "bg-[#5050ff]/10",
-          textColor: "text-[#5050ff]"
-        };
-      case "in_progress":
-        return {
-          icon: <AlertTriangle className="w-8 h-8 text-[#5050ff]" />,
-          text: "Projeto em Progresso",
-          bgColor: "bg-[#5050ff]/10",
-          textColor: "text-[#5050ff]"
-        };
-      case "completed":
-        return {
-          icon: <CheckCircle className="w-8 h-8 text-[#5050ff]" />,
-          text: "Projeto Concluído",
-          bgColor: "bg-[#5050ff]/10",
-          textColor: "text-[#5050ff]"
-        };
+    if (systemStatus === "operational") {
+      return {
+        icon: <CheckCircle className="w-8 h-8 text-[#5050ff]" />,
+        text: "Projeto em Andamento",
+        bgColor: "bg-[#5050ff]/10",
+        textColor: "text-[#5050ff]"
+      };
     }
+    if (systemStatus === "in_progress") {
+      return {
+        icon: <AlertTriangle className="w-8 h-8 text-[#5050ff]" />,
+        text: "Projeto em Progresso",
+        bgColor: "bg-[#5050ff]/10",
+        textColor: "text-[#5050ff]"
+      };
+    }
+    return {
+      icon: <CheckCircle className="w-8 h-8 text-[#5050ff]" />,
+      text: "Projeto Concluído",
+      bgColor: "bg-[#5050ff]/10",
+      textColor: "text-[#5050ff]"
+    };
   };
 
   const statusInfo = getStatusInfo();

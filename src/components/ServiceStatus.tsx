@@ -2,7 +2,6 @@
 import { CheckCircle, Clock } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Checkbox } from "@/components/ui/checkbox";
 import { useState } from "react";
 
 interface Stage {
@@ -67,24 +66,44 @@ const ServiceStatus = () => {
   };
 
   const currentCategory = stages.find(stage => stage.status === "in_progress")?.category || "";
+  const progress = calculateProgress();
 
   return (
     <div className="w-full max-w-4xl mx-auto p-4">
-      <div className="mb-8">
-        <h2 className="text-xl font-semibold mb-4 text-[#060a23]">Progresso do Projeto</h2>
-        <Progress value={calculateProgress()} className="h-2" />
+      <div className="mb-8 bg-white rounded-xl p-6 shadow-lg">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-semibold text-[#060a23]">Progresso do Projeto</h2>
+          <span className="text-lg font-medium text-[#5050ff]">
+            {progress.toFixed(0)}%
+          </span>
+        </div>
+        <Progress value={progress} className="h-3 rounded-full" />
+        <div className="mt-4 flex justify-between text-sm text-gray-500">
+          <span>Início</span>
+          <span>Em Andamento</span>
+          <span>Conclusão</span>
+        </div>
       </div>
       
       {Array.from(new Set(stages.map(stage => stage.category))).map(category => (
         <div key={category} className="mb-8">
-          <h3 className="text-lg font-medium mb-4 text-[#060a23]">{category}</h3>
+          <div className="flex items-center gap-2 mb-4">
+            <h3 className="text-lg font-medium text-[#060a23]">{category}</h3>
+            <div className="h-px flex-1 bg-gray-200" />
+            <span className="text-sm text-gray-500">
+              {stages.filter(s => s.category === category && s.status === "completed").length}/
+              {stages.filter(s => s.category === category).length}
+            </span>
+          </div>
           <div className="grid gap-4">
             {stages
               .filter(stage => stage.category === category)
               .map((stage, index) => (
                 <Card key={stage.name} 
                       className={`p-4 transition-all duration-300 hover:shadow-lg ${
-                        stage.status === "in_progress" ? "border-[#5050ff] shadow-lg" : ""
+                        stage.status === "in_progress" 
+                          ? "border-[#5050ff] shadow-lg bg-[#5050ff]/5" 
+                          : "hover:border-[#5050ff]/30"
                       }`}>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
@@ -92,11 +111,11 @@ const ServiceStatus = () => {
                         onClick={() => toggleStageStatus(
                           stages.findIndex(s => s.name === stage.name)
                         )}
-                        className="flex items-center justify-center focus:outline-none"
+                        className="flex items-center justify-center focus:outline-none hover:scale-110 transition-transform"
                       >
                         {getStatusIcon(stage.status)}
                       </button>
-                      <span className={`font-medium ${
+                      <span className={`font-medium transition-colors ${
                         stage.status === "completed" ? "text-[#5050ff]" :
                         stage.status === "in_progress" ? "text-[#5050ff]" :
                         "text-gray-500"
