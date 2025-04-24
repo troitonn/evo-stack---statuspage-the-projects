@@ -1,5 +1,5 @@
 
-import { CheckCircle, AlertTriangle, XCircle } from "lucide-react";
+import { CheckCircle, AlertTriangle } from "lucide-react";
 
 type SystemStatus = "operational" | "in_progress" | "completed";
 
@@ -26,13 +26,6 @@ const StatusHeader = () => {
         return {
           icon: <CheckCircle className="w-8 h-8 text-[#5050ff]" />,
           text: "Projeto Concluído",
-          bgColor: "bg-[#5050ff]/10",
-          textColor: "text-[#5050ff]"
-        };
-      default:
-        return {
-          icon: <CheckCircle className="w-8 h-8 text-[#5050ff]" />,
-          text: "Status do Projeto",
           bgColor: "bg-[#5050ff]/10",
           textColor: "text-[#5050ff]"
         };

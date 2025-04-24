@@ -2,6 +2,8 @@
 import { CheckCircle, Clock } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useState } from "react";
 
 interface Stage {
   name: string;
@@ -9,7 +11,7 @@ interface Stage {
   category: string;
 }
 
-const stages: Stage[] = [
+const initialStages: Stage[] = [
   { category: "Início", name: "Início do Onboarding", status: "completed" },
   { category: "Início", name: "Contrato assinado", status: "completed" },
   { category: "Financeiro", name: "Aguardando Entrada", status: "completed" },
@@ -30,6 +32,8 @@ const stages: Stage[] = [
 ];
 
 const ServiceStatus = () => {
+  const [stages, setStages] = useState<Stage[]>(initialStages);
+
   const getStatusIcon = (status: Stage["status"]) => {
     switch (status) {
       case "completed":
@@ -44,6 +48,22 @@ const ServiceStatus = () => {
   const calculateProgress = () => {
     const completed = stages.filter(stage => stage.status === "completed").length;
     return (completed / stages.length) * 100;
+  };
+
+  const toggleStageStatus = (index: number) => {
+    const newStages = [...stages];
+    const currentStatus = newStages[index].status;
+    
+    // Cycle through statuses: pending -> in_progress -> completed -> pending
+    if (currentStatus === "pending") {
+      newStages[index].status = "in_progress";
+    } else if (currentStatus === "in_progress") {
+      newStages[index].status = "completed";
+    } else {
+      newStages[index].status = "pending";
+    }
+    
+    setStages(newStages);
   };
 
   const currentCategory = stages.find(stage => stage.status === "in_progress")?.category || "";
@@ -61,14 +81,21 @@ const ServiceStatus = () => {
           <div className="grid gap-4">
             {stages
               .filter(stage => stage.category === category)
-              .map(stage => (
+              .map((stage, index) => (
                 <Card key={stage.name} 
-                      className={`p-4 transition-all duration-300 ${
+                      className={`p-4 transition-all duration-300 hover:shadow-lg ${
                         stage.status === "in_progress" ? "border-[#5050ff] shadow-lg" : ""
                       }`}>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      {getStatusIcon(stage.status)}
+                      <button 
+                        onClick={() => toggleStageStatus(
+                          stages.findIndex(s => s.name === stage.name)
+                        )}
+                        className="flex items-center justify-center focus:outline-none"
+                      >
+                        {getStatusIcon(stage.status)}
+                      </button>
                       <span className={`font-medium ${
                         stage.status === "completed" ? "text-[#5050ff]" :
                         stage.status === "in_progress" ? "text-[#5050ff]" :
