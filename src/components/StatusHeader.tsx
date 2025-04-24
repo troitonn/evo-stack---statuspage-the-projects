@@ -1,38 +1,40 @@
 
 import { CheckCircle, AlertTriangle, XCircle } from "lucide-react";
 
+type SystemStatus = "operational" | "in_progress" | "completed";
+
 const StatusHeader = () => {
-  const systemStatus = "operational"; // Simulando status
+  const systemStatus: SystemStatus = "operational";
 
   const getStatusInfo = () => {
     switch (systemStatus) {
       case "operational":
         return {
-          icon: <CheckCircle className="w-8 h-8 text-green-500" />,
-          text: "Todos os sistemas operacionais",
-          bgColor: "bg-green-50",
-          textColor: "text-green-700"
+          icon: <CheckCircle className="w-8 h-8 text-[#5050ff]" />,
+          text: "Projeto em Andamento",
+          bgColor: "bg-[#5050ff]/10",
+          textColor: "text-[#5050ff]"
         };
-      case "partial":
+      case "in_progress":
         return {
-          icon: <AlertTriangle className="w-8 h-8 text-yellow-500" />,
-          text: "Degradação parcial",
-          bgColor: "bg-yellow-50",
-          textColor: "text-yellow-700"
+          icon: <AlertTriangle className="w-8 h-8 text-[#5050ff]" />,
+          text: "Projeto em Progresso",
+          bgColor: "bg-[#5050ff]/10",
+          textColor: "text-[#5050ff]"
         };
-      case "down":
+      case "completed":
         return {
-          icon: <XCircle className="w-8 h-8 text-red-500" />,
-          text: "Sistemas indisponíveis",
-          bgColor: "bg-red-50",
-          textColor: "text-red-700"
+          icon: <CheckCircle className="w-8 h-8 text-[#5050ff]" />,
+          text: "Projeto Concluído",
+          bgColor: "bg-[#5050ff]/10",
+          textColor: "text-[#5050ff]"
         };
       default:
         return {
-          icon: <CheckCircle className="w-8 h-8 text-green-500" />,
-          text: "Sistemas operacionais",
-          bgColor: "bg-green-50",
-          textColor: "text-green-700"
+          icon: <CheckCircle className="w-8 h-8 text-[#5050ff]" />,
+          text: "Status do Projeto",
+          bgColor: "bg-[#5050ff]/10",
+          textColor: "text-[#5050ff]"
         };
     }
   };
