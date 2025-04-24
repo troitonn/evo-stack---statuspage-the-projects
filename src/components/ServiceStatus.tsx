@@ -1,8 +1,8 @@
-
 import { CheckCircle, Clock } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { useState } from "react";
+import { cn } from "@/lib/utils";
 
 interface Stage {
   name: string;
@@ -36,11 +36,11 @@ const ServiceStatus = () => {
   const getStatusIcon = (status: Stage["status"]) => {
     switch (status) {
       case "completed":
-        return <CheckCircle className="w-5 h-5 text-[#5050ff]" />;
+        return <CheckCircle className="w-5 h-5 text-[#5050ff] transform transition-all duration-300" />;
       case "in_progress":
-        return <Clock className="w-5 h-5 text-[#5050ff]" />;
+        return <Clock className="w-5 h-5 text-[#5050ff] animate-pulse" />;
       case "pending":
-        return <div className="w-5 h-5 rounded-full border-2 border-gray-300" />;
+        return <div className="w-5 h-5 rounded-full border-2 border-gray-300 transition-all duration-300 hover:border-[#5050ff]/50" />;
     }
   };
 
@@ -53,7 +53,6 @@ const ServiceStatus = () => {
     const newStages = [...stages];
     const currentStatus = newStages[index].status;
     
-    // Cycle through statuses: pending -> in_progress -> completed -> pending
     if (currentStatus === "pending") {
       newStages[index].status = "in_progress";
     } else if (currentStatus === "in_progress") {
@@ -69,16 +68,23 @@ const ServiceStatus = () => {
   const progress = calculateProgress();
 
   return (
-    <div className="w-full max-w-4xl mx-auto p-4">
-      <div className="mb-8 bg-white rounded-xl p-6 shadow-lg">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold text-[#060a23]">Progresso do Projeto</h2>
-          <span className="text-lg font-medium text-[#5050ff]">
-            {progress.toFixed(0)}%
-          </span>
+    <div className="w-full max-w-4xl mx-auto p-4 space-y-8">
+      <div className="bg-white rounded-xl p-8 shadow-lg hover:shadow-xl transition-all duration-300">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold text-[#060a23] tracking-tight">
+            Progresso do Projeto
+          </h2>
+          <div className="flex items-center gap-2">
+            <div className="text-3xl font-bold bg-gradient-to-r from-[#5050ff] to-[#6060ff] text-transparent bg-clip-text">
+              {progress.toFixed(0)}%
+            </div>
+          </div>
         </div>
-        <Progress value={progress} className="h-3 rounded-full" />
-        <div className="mt-4 flex justify-between text-sm text-gray-500">
+        <Progress 
+          value={progress} 
+          className="h-3 rounded-full bg-gray-100"
+        />
+        <div className="mt-4 flex justify-between text-sm font-medium text-gray-500">
           <span>Início</span>
           <span>Em Andamento</span>
           <span>Conclusão</span>
@@ -86,40 +92,45 @@ const ServiceStatus = () => {
       </div>
       
       {Array.from(new Set(stages.map(stage => stage.category))).map(category => (
-        <div key={category} className="mb-8">
+        <div key={category} className="space-y-4">
           <div className="flex items-center gap-2 mb-4">
-            <h3 className="text-lg font-medium text-[#060a23]">{category}</h3>
-            <div className="h-px flex-1 bg-gray-200" />
-            <span className="text-sm text-gray-500">
+            <h3 className="text-xl font-bold text-[#060a23] tracking-tight">{category}</h3>
+            <div className="h-px flex-1 bg-gradient-to-r from-gray-200 to-transparent" />
+            <span className="text-sm font-medium text-[#5050ff]">
               {stages.filter(s => s.category === category && s.status === "completed").length}/
               {stages.filter(s => s.category === category).length}
             </span>
           </div>
-          <div className="grid gap-4">
+          <div className="grid gap-3">
             {stages
               .filter(stage => stage.category === category)
               .map((stage, index) => (
-                <Card key={stage.name} 
-                      className={`p-4 transition-all duration-300 hover:shadow-lg ${
-                        stage.status === "in_progress" 
-                          ? "border-[#5050ff] shadow-lg bg-[#5050ff]/5" 
-                          : "hover:border-[#5050ff]/30"
-                      }`}>
+                <Card 
+                  key={stage.name}
+                  className={cn(
+                    "p-4 transition-all duration-300 hover:shadow-lg border-transparent",
+                    stage.status === "completed" && "bg-[#5050ff]/5 hover:bg-[#5050ff]/10",
+                    stage.status === "in_progress" && "border-[#5050ff] shadow-lg bg-gradient-to-r from-[#5050ff]/5 to-transparent",
+                    "hover:scale-[1.02] cursor-pointer"
+                  )}
+                >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <button 
                         onClick={() => toggleStageStatus(
                           stages.findIndex(s => s.name === stage.name)
                         )}
-                        className="flex items-center justify-center focus:outline-none hover:scale-110 transition-transform"
+                        className="flex items-center justify-center focus:outline-none
+                                 hover:scale-110 transition-transform"
                       >
                         {getStatusIcon(stage.status)}
                       </button>
-                      <span className={`font-medium transition-colors ${
-                        stage.status === "completed" ? "text-[#5050ff]" :
-                        stage.status === "in_progress" ? "text-[#5050ff]" :
-                        "text-gray-500"
-                      }`}>
+                      <span className={cn(
+                        "font-medium transition-colors",
+                        stage.status === "completed" && "text-[#5050ff]",
+                        stage.status === "in_progress" && "text-[#5050ff]",
+                        stage.status === "pending" && "text-gray-500"
+                      )}>
                         {stage.name}
                       </span>
                     </div>
