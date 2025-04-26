@@ -4,30 +4,20 @@ const path = require('path');
 const dataFilePath = path.join(__dirname, 'tasks.json');
 
 exports.handler = async (event, context) => {
+  console.log("Recebido evento:", event.body); // 👈 LOG PARA VER O QUE CHEGOU
+
   if (event.httpMethod === "POST") {
     try {
       const body = JSON.parse(event.body || '{}');
 
-      const { 
-        tarefa_nome, 
-        status, 
-        responsavel, 
-        data_prevista, 
-        empresa, 
-        contato, 
-        cargo_contato, 
-        valor_oportunidade, 
-        email_responsavel, 
-        telefone_responsavel, 
-        celular_responsavel 
-      } = body;
+      // Log para ver o body já como objeto
+      console.log("Body parseado:", body);
 
-//      if (!tarefa_nome || !status || !responsavel) {
-//      return {
-  //        statusCode: 400,
-    //      body: JSON.stringify({ message: "Campos obrigatórios faltando!" }),
-      //  };
-      //}
+      // Aqui agora capturamos mesmo se vier faltando campos
+      const tarefa_nome = body.tarefa_nome || 'Sem título';
+      const status = body.status || 'Sem status';
+      const responsavel = body.responsavel || 'Sem responsável';
+      const data_prevista = body.data_prevista || new Date().toISOString();
 
       let tasks = [];
       if (fs.existsSync(dataFilePath)) {
@@ -35,21 +25,7 @@ exports.handler = async (event, context) => {
         tasks = JSON.parse(fileData.toString());
       }
 
-      const newTask = { 
-        tarefa_nome, 
-        status, 
-        responsavel, 
-        data_prevista, 
-        empresa, 
-        contato, 
-        cargo_contato, 
-        valor_oportunidade, 
-        email_responsavel, 
-        telefone_responsavel, 
-        celular_responsavel,
-        recebida_em: new Date().toISOString() // Marcar quando recebeu
-      };
-
+      const newTask = { tarefa_nome, status, responsavel, data_prevista };
       tasks.push(newTask);
 
       fs.writeFileSync(dataFilePath, JSON.stringify(tasks, null, 2));
@@ -63,14 +39,13 @@ exports.handler = async (event, context) => {
       };
 
     } catch (error) {
-      console.error("Erro ao salvar tarefa:", error);
+      console.error("Erro no try-catch:", error); // 👈 loga o erro
       return {
         statusCode: 500,
-        body: JSON.stringify({ message: "Erro interno do servidor" }),
+        body: JSON.stringify({ message: "Erro interno do servidor", error: error.message }),
       };
     }
   } else if (event.httpMethod === "GET") {
-    // Retorna a lista de tarefas salvas
     try {
       if (!fs.existsSync(dataFilePath)) {
         return {
