@@ -1,11 +1,12 @@
+// Criar uma variável global fora do handler
+let tasks = [];
+
 exports.handler = async (event, context) => {
   console.log("Recebido evento:", event.body);
 
   if (event.httpMethod === "POST") {
     try {
       const body = JSON.parse(event.body || '{}');
-
-      console.log("Body parseado:", body);
 
       const tarefa_nome = body.tarefa_nome || 'Sem título';
       const status = body.status || 'Sem status';
@@ -33,7 +34,10 @@ exports.handler = async (event, context) => {
         celular_responsavel,
       };
 
-      console.log("Nova tarefa criada:", newTask);
+      // Adiciona nova tarefa na lista
+      tasks.push(newTask);
+
+      console.log("Nova tarefa adicionada. Total de tarefas:", tasks.length);
 
       return {
         statusCode: 200,
@@ -51,9 +55,13 @@ exports.handler = async (event, context) => {
       };
     }
   } else if (event.httpMethod === "GET") {
+    // Retornar todas as tarefas que temos na memória
     return {
       statusCode: 200,
-      body: JSON.stringify({ message: "GET não implementado ainda." }),
+      body: JSON.stringify({
+        message: "Tarefas atuais",
+        data: tasks
+      }),
     };
   } else {
     return {
@@ -62,3 +70,4 @@ exports.handler = async (event, context) => {
     };
   }
 };
+
