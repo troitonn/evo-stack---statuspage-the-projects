@@ -22,12 +22,12 @@ exports.handler = async (event, context) => {
         celular_responsavel 
       } = body;
 
-      if (!tarefa_nome || !status || !responsavel) {
-        return {
-          statusCode: 400,
-          body: JSON.stringify({ message: "Campos obrigatórios faltando!" }),
-        };
-      }
+//      if (!tarefa_nome || !status || !responsavel) {
+//      return {
+  //        statusCode: 400,
+    //      body: JSON.stringify({ message: "Campos obrigatórios faltando!" }),
+      //  };
+      //}
 
       let tasks = [];
       if (fs.existsSync(dataFilePath)) {
