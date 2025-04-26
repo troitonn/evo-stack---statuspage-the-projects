@@ -1,17 +1,34 @@
+
 import { CheckCircle, AlertTriangle } from "lucide-react";
+import { useState, useEffect } from "react";
 
 type SystemStatus = "operational" | "in_progress" | "completed";
 
-const StatusHeader = () => {
-  const systemStatus: SystemStatus = "operational";
+interface StatusHeaderProps {
+  progress?: number;
+}
+
+const StatusHeader = ({ progress = 0 }: StatusHeaderProps) => {
+  const [systemStatus, setSystemStatus] = useState<SystemStatus>("operational");
+
+  useEffect(() => {
+    // Update system status based on progress
+    if (progress >= 100) {
+      setSystemStatus("completed");
+    } else if (progress > 0) {
+      setSystemStatus("in_progress");
+    } else {
+      setSystemStatus("operational");
+    }
+  }, [progress]);
 
   const getStatusInfo = () => {
-    if (systemStatus === "operational") {
+    if (systemStatus === "completed") {
       return {
-        icon: <CheckCircle className="w-8 h-8 text-[#5050ff]" />,
-        text: "Projeto em Andamento",
-        bgColor: "bg-gradient-to-r from-[#5050ff]/10 to-[#6060ff]/5",
-        textColor: "text-[#5050ff]"
+        icon: <CheckCircle className="w-8 h-8 text-green-500" />,
+        text: "Projeto Concluído",
+        bgColor: "bg-gradient-to-r from-green-500/10 to-green-400/5",
+        textColor: "text-green-600"
       };
     }
     if (systemStatus === "in_progress") {
@@ -24,8 +41,8 @@ const StatusHeader = () => {
     }
     return {
       icon: <CheckCircle className="w-8 h-8 text-[#5050ff]" />,
-      text: "Projeto Concluído",
-      bgColor: "bg-[#5050ff]/10",
+      text: "Projeto em Andamento",
+      bgColor: "bg-gradient-to-r from-[#5050ff]/10 to-[#6060ff]/5",
       textColor: "text-[#5050ff]"
     };
   };

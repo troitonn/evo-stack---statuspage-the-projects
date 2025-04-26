@@ -1,7 +1,8 @@
+
 import { CheckCircle, Clock } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 
 interface Stage {
@@ -30,8 +31,13 @@ const initialStages: Stage[] = [
   { category: "Sucesso", name: "Criação de Diário de bordo", status: "pending" }
 ];
 
-const ServiceStatus = () => {
+interface ServiceStatusProps {
+  onProgressChange?: (progress: number) => void;
+}
+
+const ServiceStatus = ({ onProgressChange }: ServiceStatusProps) => {
   const [stages, setStages] = useState<Stage[]>(initialStages);
+  const [progress, setProgress] = useState<number>(0);
 
   const getStatusIcon = (status: Stage["status"]) => {
     switch (status) {
@@ -46,8 +52,17 @@ const ServiceStatus = () => {
 
   const calculateProgress = () => {
     const completed = stages.filter(stage => stage.status === "completed").length;
-    return (completed / stages.length) * 100;
+    return Math.round((completed / stages.length) * 100);
   };
+
+  useEffect(() => {
+    const currentProgress = calculateProgress();
+    setProgress(currentProgress);
+    
+    if (onProgressChange) {
+      onProgressChange(currentProgress);
+    }
+  }, [stages, onProgressChange]);
 
   const toggleStageStatus = (index: number) => {
     const newStages = [...stages];
@@ -65,7 +80,6 @@ const ServiceStatus = () => {
   };
 
   const currentCategory = stages.find(stage => stage.status === "in_progress")?.category || "";
-  const progress = calculateProgress();
 
   return (
     <div className="w-full max-w-4xl mx-auto p-4 space-y-8">
@@ -75,14 +89,18 @@ const ServiceStatus = () => {
             Progresso do Projeto
           </h2>
           <div className="flex items-center gap-2">
-            <div className="text-3xl font-bold bg-gradient-to-r from-[#5050ff] to-[#6060ff] text-transparent bg-clip-text">
-              {progress.toFixed(0)}%
+            <div className={`text-3xl font-bold ${
+              progress === 100 ? "bg-gradient-to-r from-green-500 to-green-600" : "bg-gradient-to-r from-[#5050ff] to-[#6060ff]"
+            } text-transparent bg-clip-text`}>
+              {progress}%
             </div>
           </div>
         </div>
         <Progress 
           value={progress} 
-          className="h-3 rounded-full bg-gray-100"
+          className={`h-3 rounded-full bg-gray-100 ${
+            progress === 100 ? "bg-gradient-to-r from-green-400 to-green-500" : ""
+          }`}
         />
         <div className="mt-4 flex justify-between text-sm font-medium text-gray-500">
           <span>Início</span>
