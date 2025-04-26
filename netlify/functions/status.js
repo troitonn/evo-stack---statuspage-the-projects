@@ -1,5 +1,3 @@
-// netlify/functions/status.js
-
 const fs = require('fs');
 const path = require('path');
 
@@ -9,9 +7,22 @@ exports.handler = async (event, context) => {
   if (event.httpMethod === "POST") {
     try {
       const body = JSON.parse(event.body || '{}');
-      const { tarefa_nome, status, responsavel, data_prevista } = body;
 
-      if (!tarefa_nome || !status || !responsavel || !data_prevista) {
+      const { 
+        tarefa_nome, 
+        status, 
+        responsavel, 
+        data_prevista, 
+        empresa, 
+        contato, 
+        cargo_contato, 
+        valor_oportunidade, 
+        email_responsavel, 
+        telefone_responsavel, 
+        celular_responsavel 
+      } = body;
+
+      if (!tarefa_nome || !status || !responsavel) {
         return {
           statusCode: 400,
           body: JSON.stringify({ message: "Campos obrigatórios faltando!" }),
@@ -24,7 +35,21 @@ exports.handler = async (event, context) => {
         tasks = JSON.parse(fileData.toString());
       }
 
-      const newTask = { tarefa_nome, status, responsavel, data_prevista };
+      const newTask = { 
+        tarefa_nome, 
+        status, 
+        responsavel, 
+        data_prevista, 
+        empresa, 
+        contato, 
+        cargo_contato, 
+        valor_oportunidade, 
+        email_responsavel, 
+        telefone_responsavel, 
+        celular_responsavel,
+        recebida_em: new Date().toISOString() // Marcar quando recebeu
+      };
+
       tasks.push(newTask);
 
       fs.writeFileSync(dataFilePath, JSON.stringify(tasks, null, 2));
